@@ -39,7 +39,7 @@ import {
 } from '@/types';
 import * as React from 'react';
 
-DatabaseService.init();
+// DatabaseService.init();
 
 type View = 'landing' | 'register' | 'check-status' | 'login' | 'dashboard';
 
@@ -431,50 +431,7 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
     }
   };
 
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      const registration = DatabaseService.createRegistration({
-        email: formData.email, pernahBergabung: formData.pernahBergabung as YesNo,
-        jenisKurir: formData.jenisKurir as CourierType, agama: formData.agama as Religion,
-        pendidikanTerakhir: formData.pendidikanTerakhir as Education, hubDilamar: formData.hubDilamar,
-        namaLengkap: formData.namaLengkap, nomorKtp: formData.nomorKtp, nomorWhatsapp: formData.nomorWhatsapp,
-        nomorTeleponDarurat: formData.nomorTeleponDarurat, namaPemilikNomorDarurat: formData.namaPemilikNomorDarurat,
-        hubunganPemilikNomorDarurat: formData.hubunganPemilikNomorDarurat, jenisKelamin: formData.jenisKelamin as Gender,
-        tanggalLahir: formData.tanggalLahir, alamatLengkap: formData.alamatLengkap, kota: formData.kota,
-        kecamatan: formData.kecamatan, kelurahan: formData.kelurahan, nomorSim: formData.nomorSim,
-        typeSim: formData.typeSim, masaBerlakuSim: formData.masaBerlakuSim, jenisMerkStnk: formData.jenisMerkStnk,
-        tahunPembuatanKendaraan: formData.tahunPembuatanKendaraan, nomorPolisi: formData.nomorPolisi,
-        nomorStnk: formData.nomorStnk, tanggalBerlakuStnk: formData.tanggalBerlakuStnk,
-        tanggalBerlakuPajakStnk: formData.tanggalBerlakuPajakStnk, nomorRekening: formData.nomorRekening,
-        namaPemilikRekening: formData.namaPemilikRekening, namaBank: formData.namaBank,
-        shopeeUsername: formData.shopeeUsername, statusRumah: formData.statusRumah as HouseStatus,
-        jumlahTanggungan: formData.jumlahTanggungan, status: 'pending',
-      });
-
-      for (const [docType, docData] of Object.entries(documents)) {
-        if (docData.file) {
-          const result = await UploadService.uploadFile(docData.file, docType as DocumentType);
-          if (result.success) {
-            DatabaseService.createDocument({
-              registrationId: registration.id, type: docType as DocumentType,
-              fileName: result.fileName!, fileUrl: result.fileUrl!, fileSize: result.fileSize!,
-              mimeType: result.mimeType!, uploadedAt: new Date().toISOString(), status: 'pending',
-            });
-          }
-        }
-      }
-
-      await NotificationService.sendRegistrationConfirmation(registration);
-      setRegistrationCode(registration.registrationCode);
-      setStep(7);
-      toast.success('Pendaftaran berhasil!');
-    } catch (error) {
-      toast.error('Terjadi kesalahan saat mendaftar');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+// ...existing code...
 
   const isStep1Valid = formData.email && formData.pernahBergabung && formData.jenisKurir && formData.agama && formData.pendidikanTerakhir && formData.hubDilamar;
   const isStep2Valid = formData.namaLengkap && formData.nomorKtp && formData.nomorWhatsapp && formData.nomorTeleponDarurat && formData.namaPemilikNomorDarurat && formData.hubunganPemilikNomorDarurat && formData.jenisKelamin && formData.tanggalLahir;
@@ -484,6 +441,94 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
   const isStep6Valid = Object.values(documents).every(d => d.file !== null);
 
   const stepTitles = ['Informasi Dasar', 'Data Pribadi', 'Alamat Domisili', 'SIM & Kendaraan', 'Rekening & Informasi Lainnya', 'Upload Dokumen', 'Selesai'];
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // Create registration
+      const registration = await DatabaseService.createRegistration({
+        email: formData.email,
+        pernahBergabung: formData.pernahBergabung as YesNo,
+        jenisKurir: formData.jenisKurir as CourierType,
+        agama: formData.agama as Religion,
+        pendidikanTerakhir: formData.pendidikanTerakhir as Education,
+        hubDilamar: formData.hubDilamar,
+        namaLengkap: formData.namaLengkap,
+        nomorKtp: formData.nomorKtp,
+        nomorWhatsapp: formData.nomorWhatsapp,
+        nomorTeleponDarurat: formData.nomorTeleponDarurat,
+        namaPemilikNomorDarurat: formData.namaPemilikNomorDarurat,
+        hubunganPemilikNomorDarurat: formData.hubunganPemilikNomorDarurat,
+        jenisKelamin: formData.jenisKelamin as Gender,
+        tanggalLahir: formData.tanggalLahir,
+        alamatLengkap: formData.alamatLengkap,
+        kota: formData.kota,
+        kecamatan: formData.kecamatan,
+        kelurahan: formData.kelurahan,
+        nomorSim: formData.nomorSim,
+        typeSim: formData.typeSim,
+        masaBerlakuSim: formData.masaBerlakuSim,
+        jenisMerkStnk: formData.jenisMerkStnk,
+        tahunPembuatanKendaraan: formData.tahunPembuatanKendaraan,
+        nomorPolisi: formData.nomorPolisi,
+        nomorStnk: formData.nomorStnk,
+        tanggalBerlakuStnk: formData.tanggalBerlakuStnk,
+        tanggalBerlakuPajakStnk: formData.tanggalBerlakuPajakStnk,
+        nomorRekening: formData.nomorRekening,
+        namaPemilikRekening: formData.namaPemilikRekening,
+        namaBank: formData.namaBank,
+        shopeeUsername: formData.shopeeUsername,
+        statusRumah: formData.statusRumah as HouseStatus,
+        jumlahTanggungan: formData.jumlahTanggungan,
+        status: 'pending',
+      });
+
+      // Upload documents
+      const uploadErrors: string[] = [];
+      for (const docTypeKey of Object.keys(documents) as DocumentType[]) {
+        const docData = documents[docTypeKey];
+        if (docData.file) {
+          try {
+            const result = await UploadService.uploadFile(docData.file, docTypeKey);
+            if (result.success) {
+              await DatabaseService.createDocument({
+                registrationId: registration.id,
+                type: docTypeKey,
+                fileName: result.fileName!,
+                fileUrl: result.fileUrl!,
+                fileSize: result.fileSize!,
+                mimeType: result.mimeType!,
+                uploadedAt: new Date().toISOString(),
+                status: 'pending',
+              });
+            } else {
+              uploadErrors.push(`${DOCUMENT_LABELS[docTypeKey]}: ${result.message}`);
+            }
+          } catch (error) {
+            uploadErrors.push(`${DOCUMENT_LABELS[docTypeKey]}: Upload failed`);
+          }
+        }
+      }
+
+      // Send notification
+      await NotificationService.sendRegistrationConfirmation(registration);
+
+      setRegistrationCode(registration.registrationCode);
+      setStep(7); // Success step
+
+      if (uploadErrors.length > 0) {
+        toast.success(`Pendaftaran berhasil! Namun ${uploadErrors.length} dokumen gagal diupload: ${uploadErrors.join(', ')}`);
+      } else {
+        toast.success('Pendaftaran berhasil!');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat mendaftar';
+      toast.error(`❌ ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -771,13 +816,18 @@ function CheckStatusPage({ onNavigate }: { onNavigate: (view: View) => void }) {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchCode.trim()) { toast.error('Masukkan kode pendaftaran'); return; }
     setLoading(true); setSearched(true);
-    setTimeout(() => {
-      setRegistration(DatabaseService.getRegistrationByCode(searchCode.toUpperCase().trim()) || null);
+    try {
+      const result = await DatabaseService.getRegistrationByCode(searchCode.toUpperCase().trim());
+      setRegistration(result || null);
+    } catch (error) {
+      toast.error('Terjadi kesalahan saat mencari pendaftaran');
+      setRegistration(null);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
@@ -817,12 +867,12 @@ function CheckStatusPage({ onNavigate }: { onNavigate: (view: View) => void }) {
                     <div className="border rounded-lg p-4">
                       <h3 className="font-semibold mb-3">Detail Pendaftaran</h3>
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between"><span className="text-gray-600">Nama</span><span className="font-medium">{registration.namaLengkap}</span></div>
+                                 <div className="flex justify-between"><span className="text-gray-600">Nama</span><span className="font-medium">{registration.nama_lengkap}</span></div>
                         <div className="flex justify-between"><span className="text-gray-600">Email</span><span className="font-medium">{registration.email}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-600">No. WhatsApp</span><span className="font-medium">{registration.nomorWhatsapp}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-600">Jenis Kurir</span><span className="font-medium">{COURIER_TYPE_LABELS[registration.jenisKurir]}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-600">Hub yang Dilamar</span><span className="font-medium">{registration.hubDilamar}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-600">Tanggal Daftar</span><span className="font-medium">{new Date(registration.submittedAt).toLocaleDateString('id-ID')}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-600">No. WhatsApp</span><span className="font-medium">{registration.no_whatsapp}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-600">Jenis Kurir</span><span className="font-medium">{COURIER_TYPE_LABELS[registration.tipe_kurir]}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-600">Hub yang Dilamar</span><span className="font-medium">{registration.hub_dilamar}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-600">Tanggal Daftar</span><span className="font-medium">{new Date(registration.submitted_at).toLocaleDateString('id-ID')}</span></div>
                         {registration.rejectionReason && <div className="flex justify-between"><span className="text-gray-600">Alasan Penolakan</span><span className="font-medium text-red-600">{registration.rejectionReason}</span></div>}
                       </div>
                     </div>
@@ -849,18 +899,27 @@ function LoginPage({ onNavigate, onLogin }: { onNavigate: (view: View) => void; 
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username || !password) { toast.error('Masukkan username dan password'); return; }
-    setLoading(true);
-    setTimeout(() => {
-      const result = AuthService.login(username, password);
-      if (result.success) { toast.success('Login berhasil'); onLogin(); }
-      else { toast.error(result.message); }
-      setLoading(false);
-    }, 500);
-  };
 
+  if (!username || !password) {
+    toast.error("Masukkan username dan password")
+    return
+  }
+
+  setLoading(true)
+
+  const result = await AuthService.login(username, password)
+
+  if (result.success) {
+    toast.success("Login berhasil")
+    onLogin()
+  } else {
+    toast.error(result.message)
+  }
+
+  setLoading(false)
+}
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -891,8 +950,31 @@ function LoginPage({ onNavigate, onLogin }: { onNavigate: (view: View) => void; 
 function Dashboard({ onLogout, sidebarOpen, setSidebarOpen, user }: { onLogout: () => void; sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void; user: User }) {
   const [activeTab, setActiveTab] = useState('registrations');
   const [stats, setStats] = useState<DashboardStats>({ totalRegistrations: 0, pendingRegistrations: 0, verifiedRegistrations: 0, approvedRegistrations: 0, rejectedRegistrations: 0, todayRegistrations: 0, totalPICs: 0 });
+  const [registrations, setRegistrations] = useState([])
+  useEffect(() => {
 
-  useEffect(() => { setStats(DatabaseService.getDashboardStats()); }, [activeTab]);
+  const loadRegistrations = async () => {
+
+    const data = await DatabaseService.getRegistrations()
+
+    // Fetch documents for each registration if not already included
+    const registrationsWithDocuments = await Promise.all(
+      data.map(async (reg) => {
+        if (!reg.documents || reg.documents.length === 0) {
+          const documents = await DatabaseService.getDocumentsByRegistrationId(reg.id)
+          return { ...reg, documents }
+        }
+        return reg
+      })
+    )
+
+    setRegistrations(registrationsWithDocuments)
+
+  }
+
+  loadRegistrations()
+
+}, [])
 
   const isAdmin = user.role === 'admin';
 
@@ -985,13 +1067,35 @@ function RegistrationsPanel({ user }: { user: User }) {
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectDialog, setShowRejectDialog] = useState(false);
 
-  useEffect(() => { loadRegistrations(); }, []);
-  const loadRegistrations = () => setRegistrations(DatabaseService.getRegistrations());
+  useEffect(() => {
+    const loadRegistrations = async () => {
+      const data = await DatabaseService.getRegistrations();
+      setRegistrations(data);
+    };
+    loadRegistrations();
+  }, []);
 
-  const filteredRegistrations = registrations.filter(reg => {
-    const matchesStatus = filterStatus === 'all' || reg.status === filterStatus;
-    const matchesSearch = reg.namaLengkap.toLowerCase().includes(searchQuery.toLowerCase()) || reg.registrationCode.toLowerCase().includes(searchQuery.toLowerCase()) || reg.email.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
+  const loadRegistrations = async () => {
+    const data = await DatabaseService.getRegistrations();
+    setRegistrations(data);
+  };
+
+ const safeRegistrations = Array.isArray(registrations) ? registrations : []
+
+  const filteredRegistrations = safeRegistrations.filter(r => {
+    if (!r) return false; // Skip undefined or null items
+    // Filter by status
+    if (filterStatus !== "all" && r.status !== filterStatus) return false;
+    
+    // Filter by search query (name, code, or email)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (r.nama_lengkap || '').toLowerCase().includes(query) ||
+             (r.registration_code || '').toLowerCase().includes(query) ||
+             (r.email || '').toLowerCase().includes(query);
+    }
+    
+    return true;
   });
 
   const handleVerify = async (registration: Registration) => {
@@ -999,7 +1103,7 @@ function RegistrationsPanel({ user }: { user: User }) {
     const updated = DatabaseService.getRegistrationById(registration.id)!;
     await NotificationService.sendStatusUpdate(updated);
     DatabaseService.createActivityLog({ userId: user.id, userName: user.name, action: 'verify', entityType: 'registration', entityId: registration.id, description: `Verifikasi dokumen pendaftaran ${registration.registrationCode}` });
-    toast.success('Dokumen berhasil diverifikasi'); loadRegistrations(); setSelectedRegistration(null);
+    toast.success('Dokumen berhasil diverifikasi'); await loadRegistrations(); setSelectedRegistration(null);
   };
 
   const handleApprove = async (registration: Registration) => {
@@ -1007,7 +1111,7 @@ function RegistrationsPanel({ user }: { user: User }) {
     const updated = DatabaseService.getRegistrationById(registration.id)!;
     await NotificationService.sendStatusUpdate(updated);
     DatabaseService.createActivityLog({ userId: user.id, userName: user.name, action: 'approve', entityType: 'registration', entityId: registration.id, description: `Approve pendaftaran ${registration.registrationCode}` });
-    toast.success('Pendaftaran berhasil disetujui'); loadRegistrations(); setSelectedRegistration(null);
+    toast.success('Pendaftaran berhasil disetujui'); await loadRegistrations(); setSelectedRegistration(null);
   };
 
   const handleReject = async () => {
@@ -1016,10 +1120,11 @@ function RegistrationsPanel({ user }: { user: User }) {
     const updated = DatabaseService.getRegistrationById(selectedRegistration.id)!;
     await NotificationService.sendStatusUpdate(updated);
     DatabaseService.createActivityLog({ userId: user.id, userName: user.name, action: 'reject', entityType: 'registration', entityId: selectedRegistration.id, description: `Reject pendaftaran ${selectedRegistration.registrationCode}` });
+    toast.success('Pendaftaran ditolak'); setShowRejectDialog(false); setRejectionReason(''); await loadRegistrations(); setSelectedRegistration(null);
   };
 
   // Function to download document
-  const downloadDocument = (fileUrl: string, fileName: string, candidateName: string, docType: string) => {
+    const downloadDocument = (fileUrl: string, fileName: string, candidateName: string, docType: string) => {
     const link = document.createElement('a');
     link.href = fileUrl;
     // Create clean filename: NamaKandidat_TipeDokumen.jpg
@@ -1031,7 +1136,6 @@ function RegistrationsPanel({ user }: { user: User }) {
     link.click();
     document.body.removeChild(link);
     toast.success(`Mendownload ${DOCUMENT_LABELS[docType as DocumentType]}`);
-    toast.success('Pendaftaran ditolak'); setShowRejectDialog(false); setRejectionReason(''); loadRegistrations(); setSelectedRegistration(null);
   };
 
   const handleExport = () => {
@@ -1070,15 +1174,15 @@ function RegistrationsPanel({ user }: { user: User }) {
             </TableHeader>
             <TableBody>
               {filteredRegistrations.map((reg) => (
-                <TableRow key={reg.id}>
-                  <TableCell className="font-mono text-xs">{reg.registrationCode}</TableCell>
-                  <TableCell>{reg.namaLengkap}</TableCell>
-                  <TableCell>{COURIER_TYPE_LABELS[reg.jenisKurir]}</TableCell>
-                  <TableCell>{reg.hubDilamar}</TableCell>
-                  <TableCell>{getStatusBadge(reg.status)}</TableCell>
-                  <TableCell>{new Date(reg.submittedAt).toLocaleDateString('id-ID')}</TableCell>
-                  <TableCell><Button variant="ghost" size="sm" onClick={() => setSelectedRegistration(reg)}><Eye className="h-4 w-4" /></Button></TableCell>
-                </TableRow>
+                  <TableRow key={reg.id}>
+                    <TableCell className="font-mono text-xs">{reg.registration_code}</TableCell>
+                    <TableCell>{reg.nama_lengkap}</TableCell>
+                    <TableCell>{COURIER_TYPE_LABELS[reg.tipe_kurir]}</TableCell>
+                    <TableCell>{reg.hub_dilamar}</TableCell>
+                    <TableCell>{getStatusBadge(reg.status)}</TableCell>
+                    <TableCell>{new Date(reg.submitted_at).toLocaleDateString('id-ID')}</TableCell>
+                    <TableCell><Button variant="ghost" size="sm" onClick={() => setSelectedRegistration(reg)}><Eye className="h-4 w-4" /></Button></TableCell>
+                  </TableRow>
               ))}
             </TableBody>
           </Table>
@@ -1094,43 +1198,54 @@ function RegistrationsPanel({ user }: { user: User }) {
                 <div className="flex justify-between items-center">{getStatusBadge(selectedRegistration.status)}<span className="text-sm text-gray-500">{new Date(selectedRegistration.submittedAt).toLocaleString('id-ID')}</span></div>
                 <Tabs defaultValue="personal">
                   <TabsList className="grid w-full grid-cols-5"><TabsTrigger value="personal">Pribadi</TabsTrigger><TabsTrigger value="address">Alamat</TabsTrigger><TabsTrigger value="sim">SIM</TabsTrigger><TabsTrigger value="vehicle">Kendaraan</TabsTrigger><TabsTrigger value="documents">Dokumen</TabsTrigger></TabsList>
-                  <TabsContent value="personal" className="space-y-4">
+  <TabsContent value="personal" className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <InfoItem label="Email" value={selectedRegistration.email} />
-                      <InfoItem label="Nama Lengkap" value={selectedRegistration.namaLengkap} />
-                      <InfoItem label="Nomor KTP" value={selectedRegistration.nomorKtp} />
-                      <InfoItem label="Nomor WhatsApp" value={selectedRegistration.nomorWhatsapp} />
-                      <InfoItem label="Jenis Kurir" value={COURIER_TYPE_LABELS[selectedRegistration.jenisKurir]} />
+                      <InfoItem label="Nama Lengkap" value={selectedRegistration.nama_lengkap} />
+                      <InfoItem label="Nomor KTP" value={selectedRegistration.nomor_ktp} />
+                      <InfoItem label="Nomor WhatsApp" value={selectedRegistration.nomor_whatsapp} />
+                      <InfoItem label="Jenis Kurir" value={COURIER_TYPE_LABELS[selectedRegistration.tipe_kurir]} />
                       <InfoItem label="Agama" value={RELIGION_LABELS[selectedRegistration.agama]} />
-                      <InfoItem label="Pendidikan" value={EDUCATION_LABELS[selectedRegistration.pendidikanTerakhir]} />
-                      <InfoItem label="Jenis Kelamin" value={selectedRegistration.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'} />
-                      <InfoItem label="Tanggal Lahir" value={selectedRegistration.tanggalLahir} />
-                      <InfoItem label="Pernah Bergabung" value={YES_NO_LABELS[selectedRegistration.pernahBergabung]} />
-                      <InfoItem label="Hub yang Dilamar" value={selectedRegistration.hubDilamar} />
-                      <InfoItem label="Kontak Darurat" value={`${selectedRegistration.namaPemilikNomorDarurat} (${selectedRegistration.hubunganPemilikNomorDarurat})`} />
-                      <InfoItem label="Nomor Darurat" value={selectedRegistration.nomorTeleponDarurat} />
+                      <InfoItem label="Pendidikan" value={EDUCATION_LABELS[selectedRegistration.pendidikan_terakhir]} />
+                      <InfoItem label="Jenis Kelamin" value={selectedRegistration.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} />
+                      <InfoItem label="Tanggal Lahir" value={selectedRegistration.tanggal_lahir} />
+                      <InfoItem label="Pernah Bergabung" value={YES_NO_LABELS[selectedRegistration.pernah_bergabung]} />
+                      <InfoItem label="Hub yang Dilamar" value={selectedRegistration.hub_dilamar} />
+                      <InfoItem label="Kontak Darurat" value={`${selectedRegistration.nama_pemilik_nomor_darurat} (${selectedRegistration.hubungan_pemilik_nomor_darurat})`} />
+                      <InfoItem label="Nomor Darurat" value={selectedRegistration.nomor_telepon_darurat} />
                     </div>
                   </TabsContent>
-                  <TabsContent value="address" className="space-y-4"><InfoItem label="Alamat Lengkap" value={selectedRegistration.alamatLengkap} /><div className="grid grid-cols-3 gap-4 text-sm"><InfoItem label="Kota" value={selectedRegistration.kota} /><InfoItem label="Kecamatan" value={selectedRegistration.kecamatan} /><InfoItem label="Kelurahan" value={selectedRegistration.kelurahan} /></div></TabsContent>
-                  <TabsContent value="sim" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Nomor SIM" value={selectedRegistration.nomorSim} /><InfoItem label="Type SIM" value={selectedRegistration.typeSim} /><InfoItem label="Masa Berlaku SIM" value={selectedRegistration.masaBerlakuSim} /></div></TabsContent>
-                  <TabsContent value="vehicle" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Jenis/Merk" value={selectedRegistration.jenisMerkStnk} /><InfoItem label="Tahun Pembuatan" value={selectedRegistration.tahunPembuatanKendaraan} /><InfoItem label="Nomor Polisi" value={selectedRegistration.nomorPolisi} /><InfoItem label="Nomor STNK" value={selectedRegistration.nomorStnk} /><InfoItem label="Berlaku STNK" value={selectedRegistration.tanggalBerlakuStnk} /><InfoItem label="Berlaku Pajak" value={selectedRegistration.tanggalBerlakuPajakStnk} /></div></TabsContent>
+                  <TabsContent value="address" className="space-y-4"><InfoItem label="Alamat Lengkap" value={selectedRegistration.alamat_lengkap} /><div className="grid grid-cols-3 gap-4 text-sm"><InfoItem label="Kota" value={selectedRegistration.kota} /><InfoItem label="Kecamatan" value={selectedRegistration.kecamatan} /><InfoItem label="Kelurahan" value={selectedRegistration.kelurahan} /></div></TabsContent>
+                  <TabsContent value="sim" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Nomor SIM" value={selectedRegistration.nomor_sim} /><InfoItem label="Type SIM" value={selectedRegistration.type_sim} /><InfoItem label="Masa Berlaku SIM" value={selectedRegistration.masa_berlaku_sim} /></div></TabsContent>
+                  <TabsContent value="vehicle" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Jenis/Merk" value={selectedRegistration.jenis_merk_stnk} /><InfoItem label="Tahun Pembuatan" value={selectedRegistration.tahun_pembuatan_kendaraan} /><InfoItem label="Nomor Polisi" value={selectedRegistration.nomor_polisi} /><InfoItem label="Nomor STNK" value={selectedRegistration.nomor_stnk} /><InfoItem label="Berlaku STNK" value={selectedRegistration.tanggal_berlaku_stnk} /><InfoItem label="Berlaku Pajak" value={selectedRegistration.tanggal_berlaku_pajak_stnk} /></div></TabsContent>
                   <TabsContent value="documents" className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {selectedRegistration.documents.map((doc) => (
-                        <div key={doc.id} className="border rounded-lg p-3">
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="font-medium text-sm">{DOCUMENT_LABELS[doc.type]}</p>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => downloadDocument(doc.fileUrl, doc.fileName, selectedRegistration.namaLengkap, doc.type)}
-                            >
-                              <Download className="h-4 w-4 mr-1" /> Download
-                            </Button>
+                      {selectedRegistration.documents && selectedRegistration.documents.length > 0 ? (
+                        selectedRegistration.documents.map((doc) => (
+                          <div key={doc.id} className="border rounded-lg p-3">
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="font-medium text-sm">{DOCUMENT_LABELS[doc.type]}</p>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => downloadDocument(doc.fileUrl, doc.fileName, selectedRegistration.namaLengkap, doc.type)}
+                              >
+                                <Download className="h-4 w-4 mr-1" /> Download
+                              </Button>
+                            </div>
+                            <img 
+                              src={doc.fileUrl} 
+                              alt={doc.fileName} 
+                              className="w-full h-40 object-cover rounded" 
+                              onError={(e) => {
+                                e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDMTMuMSAyIDE0IDIuOSAxNCA0VjE2QzE0IDE3LjEgMTMuMSAxOCA5LjkgMTlIMTQuMUMxNS4xIDE5IDE2IDE4LjEgMTYgMTdWNFoiIGZpbGw9IiM5Q0E0QUYiLz4KPHBhdGggZD0iTTEwIDZDOS40IDYgOSA2LjQgOSA3VjEzQzkgMTMuNiA5LjQgMTQgMTAgMTRDMTMuNiAxNCAxNCAxMy42IDE0IDEzVjdDMTQgNi40IDEzLjYgNiAxMCA2WiIgZmlsbD0iIzlDQTQ5RiIvPgo8L3N2Zz4=';
+                              }}
+                            />
                           </div>
-                          <img src={doc.fileUrl} alt={doc.fileName} className="w-full h-40 object-cover rounded" />
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-8">Tidak ada dokumen yang diupload</p>
+                      )}
                     </div>
                   </TabsContent>
                 </Tabs>
@@ -1165,16 +1280,31 @@ function UsersPanel() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newUser, setNewUser] = useState({ username: '', name: '', email: '', phone: '', password: '', role: 'pic' as 'pic' | 'admin' });
 
-  useEffect(() => { setUsers(DatabaseService.getUsers()); }, []);
+  useEffect(() => {
+    const loadUsers = async () => {
+      const data = await DatabaseService.getUsers();
+      setUsers(data);
+    };
+    loadUsers();
+  }, []);
 
-  const handleAddUser = () => {
+  const handleAddUser = async () => {
     if (!newUser.username || !newUser.name || !newUser.email || !newUser.password) { toast.error('Semua field wajib diisi'); return; }
-    if (DatabaseService.getUserByUsername(newUser.username)) { toast.error('Username sudah digunakan'); return; }
-    DatabaseService.createUser({ ...newUser, password: AuthService.hashPassword(newUser.password), isActive: true });
-    toast.success('User berhasil ditambahkan'); setShowAddDialog(false); setNewUser({ username: '', name: '', email: '', phone: '', password: '', role: 'pic' }); setUsers(DatabaseService.getUsers());
+    const existingUser = await DatabaseService.getUserByUsername(newUser.username);
+    if (existingUser) { toast.error('Username sudah digunakan'); return; }
+    await DatabaseService.createUser({ ...newUser, password: AuthService.hashPassword(newUser.password), isActive: true });
+    toast.success('User berhasil ditambahkan'); setShowAddDialog(false); setNewUser({ username: '', name: '', email: '', phone: '', password: '', role: 'pic' });
+    const data = await DatabaseService.getUsers();
+    setUsers(data);
   };
 
-  const handleToggleActive = (user: User) => { DatabaseService.updateUser(user.id, { isActive: !user.isActive }); setUsers(DatabaseService.getUsers()); toast.success(`User ${user.isActive ? 'dinonaktifkan' : 'diaktifkan'}`); };
+  const handleToggleActive = async (user: User) => {
+    await DatabaseService.updateUser(user.id, { isActive: !user.isActive });
+    const data = await DatabaseService.getUsers();
+    setUsers(data);
+    toast.success(`User ${user.isActive ? 'dinonaktifkan' : 'diaktifkan'}`);
+  };
+
   const handleExport = () => { ExportService.exportUsers(users); toast.success('Data berhasil diexport'); };
 
   return (
@@ -1221,7 +1351,13 @@ function UsersPanel() {
 
 function LogsPanel() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
-  useEffect(() => { setLogs(DatabaseService.getActivityLogs()); }, []);
+  useEffect(() => {
+    const loadLogs = async () => {
+      const data = await DatabaseService.getActivityLogs();
+      setLogs(data);
+    };
+    loadLogs();
+  }, []);
   const handleExport = () => { ExportService.exportActivityLogs(logs.map(l => ({ userName: l.userName, action: l.action, description: l.description, timestamp: l.timestamp }))); toast.success('Log berhasil diexport'); };
 
   return (
