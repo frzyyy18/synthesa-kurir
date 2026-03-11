@@ -10,6 +10,46 @@ export interface AuthState {
 
 class AuthService {
 
+  static hashPassword(password: string): string {
+    return sha256(password)
+  }
+
+  static async changePassword(userId: string, oldPassword: string, newPassword: string) {
+    try {
+      // Get current user
+      const { data: user, error: userError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .single()
+
+      if (userError || !user) {
+        return { success: false, message: "User tidak ditemukan" }
+      }
+
+      // Verify old password
+      const hashedOldPassword = sha256(oldPassword)
+      if (user.password !== hashedOldPassword) {
+        return { success: false, message: "Password lama salah" }
+      }
+
+      // Update password
+      const hashedNewPassword = sha256(newPassword)
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ password: hashedNewPassword })
+        .eq("id", userId)
+
+      if (updateError) {
+        return { success: false, message: "Gagal mengubah password" }
+      }
+
+      return { success: true, message: "Password berhasil diubah" }
+    } catch (error: any) {
+      return { success: false, message: error.message || "Terjadi kesalahan" }
+    }
+  }
+
   static async login(username: string, password: string) {
 
     const { data, error } = await supabase

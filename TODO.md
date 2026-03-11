@@ -1,11 +1,15 @@
-# TODO - Perbaikan Database Registration
+# TODO - Fix Vercel Deployment Errors
 
-## Progress
-- [x] 1. Analisis masalah database
-- [x] 2. Fix missing import supabase di upload.ts
-- [x] 3. Fix field no_hp → nomor_whatsapp di database schema SQL
-- [x] 4. Update database-setup.sql dengan RLS policies
-- [x] 5. Buat SETUP_SUPABASE.md dengan panduan lengkap
+## TypeScript Errors to Fix
 
-## Status: SELESAI ✅
+- [x] 1. Add hashPassword method to auth.ts
+- [x] 2. Add changePassword method to auth.ts
+- [x] 3. Fix parameter type in database.ts (line 384)
+- [ ] 4. Fix field references in App.tsx (snake_case to camelCase)
+
+## Deployment Steps
+
+- [ ] 5. Build and test locally
+- [ ] 6. Push to GitHub
+- [ ] 7. Deploy to Vercel
 
