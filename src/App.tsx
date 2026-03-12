@@ -867,11 +867,11 @@ function CheckStatusPage({ onNavigate }: { onNavigate: (view: View) => void }) {
                     <div className="border rounded-lg p-4">
                       <h3 className="font-semibold mb-3">Detail Pendaftaran</h3>
                       <div className="space-y-2 text-sm">
-                                 <div className="flex justify-between"><span className="text-gray-600">Nama</span><span className="font-medium">{registration.nama_lengkap}</span></div>
+registration.namaLengkap
                         <div className="flex justify-between"><span className="text-gray-600">Email</span><span className="font-medium">{registration.email}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-600">No. WhatsApp</span><span className="font-medium">{registration.no_whatsapp}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-600">Jenis Kurir</span><span className="font-medium">{COURIER_TYPE_LABELS[registration.tipe_kurir]}</span></div>
-                        <div className="flex justify-between"><span className="text-gray-600">Hub yang Dilamar</span><span className="font-medium">{registration.hub_dilamar}</span></div>
+registration.nomorWhatsapp
+COURIER_TYPE_LABELS[registration.jenisKurir as CourierType]
+registration.hubDilamar
                         <div className="flex justify-between"><span className="text-gray-600">Tanggal Daftar</span><span className="font-medium">{new Date(registration.submitted_at).toLocaleDateString('id-ID')}</span></div>
                         {registration.rejectionReason && <div className="flex justify-between"><span className="text-gray-600">Alasan Penolakan</span><span className="font-medium text-red-600">{registration.rejectionReason}</span></div>}
                       </div>

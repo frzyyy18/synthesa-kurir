@@ -1,9 +1,10 @@
-# 1. Jalankan manual (PowerShell tidak support && chaining):
-git add .
-git rm --cached TODO.md fix-missing-columns.sql create-documents-table.sql
-git commit -m "Cleanup: Remove temporary debug files"
-git push origin main
+# 1. Build & test locally
+npm run dev  # Verify app works (localhost:5173)
 
-# 2. Deploy Vercel:
+# 2. Commit changes
+git add .
+git commit -m "fix: standardize field names to camelCase in UI"
+
+# 3. Deploy to Vercel
 npm run build
 vercel --prod
