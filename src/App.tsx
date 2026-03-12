@@ -1201,8 +1201,10 @@ function RegistrationsPanel({ user }: { user: User }) {
   <TabsContent value="personal" className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <InfoItem label="Email" value={selectedRegistration.email} />
-selectedRegistration.namaLengkap
-selectedRegistration.nomorKtp
+
+<InfoItem label="Nama" value={selectedRegistration.nama_lengkap} />
+<InfoItem label="Nomor KTP" value={selectedRegistration.nomor_ktp} />
+
                       <InfoItem label="Nomor WhatsApp" value={selectedRegistration.nomor_whatsapp} />
                       <InfoItem label="Jenis Kurir" value={COURIER_TYPE_LABELS[selectedRegistration.tipe_kurir]} />
                       <InfoItem label="Agama" value={RELIGION_LABELS[selectedRegistration.agama]} />
@@ -1378,13 +1380,14 @@ function ProfilePanel({ user }: { user: User }) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) { toast.error('Password baru tidak cocok'); return; }
     if (newPassword.length < 6) { toast.error('Password minimal 6 karakter'); return; }
     const result = await AuthService.changePassword(user.id, oldPassword, newPassword);
     if (result.success) { toast.success(result.message); setOldPassword(''); setNewPassword(''); setConfirmPassword(''); }
     else { toast.error(result.message); }
   };
+
 
   return (
     <div className="max-w-2xl space-y-6">
