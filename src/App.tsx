@@ -872,7 +872,7 @@ registration.namaLengkap
 registration.nomorWhatsapp
 COURIER_TYPE_LABELS[registration.jenisKurir as CourierType]
 registration.hubDilamar
-                        <div className="flex justify-between"><span className="text-gray-600">Tanggal Daftar</span><span className="font-medium">{new Date(registration.submitted_at).toLocaleDateString('id-ID')}</span></div>
+new Date(registration.submittedAt).toLocaleDateString('id-ID')
                         {registration.rejectionReason && <div className="flex justify-between"><span className="text-gray-600">Alasan Penolakan</span><span className="font-medium text-red-600">{registration.rejectionReason}</span></div>}
                       </div>
                     </div>
@@ -949,32 +949,9 @@ function LoginPage({ onNavigate, onLogin }: { onNavigate: (view: View) => void; 
 // Dashboard
 function Dashboard({ onLogout, sidebarOpen, setSidebarOpen, user }: { onLogout: () => void; sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void; user: User }) {
   const [activeTab, setActiveTab] = useState('registrations');
-  const [stats, setStats] = useState<DashboardStats>({ totalRegistrations: 0, pendingRegistrations: 0, verifiedRegistrations: 0, approvedRegistrations: 0, rejectedRegistrations: 0, todayRegistrations: 0, totalPICs: 0 });
-  const [registrations, setRegistrations] = useState([])
-  useEffect(() => {
+const stats = { totalRegistrations: 0, pendingRegistrations: 0, verifiedRegistrations: 0, approvedRegistrations: 0, rejectedRegistrations: 0, todayRegistrations: 0, totalPICs: 0 };
+// registrations state removed
 
-  const loadRegistrations = async () => {
-
-    const data = await DatabaseService.getRegistrations()
-
-    // Fetch documents for each registration if not already included
-    const registrationsWithDocuments = await Promise.all(
-      data.map(async (reg) => {
-        if (!reg.documents || reg.documents.length === 0) {
-          const documents = await DatabaseService.getDocumentsByRegistrationId(reg.id)
-          return { ...reg, documents }
-        }
-        return reg
-      })
-    )
-
-    setRegistrations(registrationsWithDocuments)
-
-  }
-
-  loadRegistrations()
-
-}, [])
 
   const isAdmin = user.role === 'admin';
 
@@ -1090,8 +1067,8 @@ function RegistrationsPanel({ user }: { user: User }) {
     // Filter by search query (name, code, or email)
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      return (r.nama_lengkap || '').toLowerCase().includes(query) ||
-             (r.registration_code || '').toLowerCase().includes(query) ||
+(r.namaLengkap || '').toLowerCase().includes(query) ||
+             (r.registrationCode || '').toLowerCase().includes(query) ||
              (r.email || '').toLowerCase().includes(query);
     }
     
@@ -1100,7 +1077,7 @@ function RegistrationsPanel({ user }: { user: User }) {
 
   const handleVerify = async (registration: Registration) => {
     DatabaseService.updateRegistration(registration.id, { status: 'verified', verifiedAt: new Date().toISOString(), verifiedBy: user.id });
-    const updated = DatabaseService.getRegistrationById(registration.id)!;
+    const updated = await DatabaseService.getRegistrationById(registration.id)!;
     await NotificationService.sendStatusUpdate(updated);
     DatabaseService.createActivityLog({ userId: user.id, userName: user.name, action: 'verify', entityType: 'registration', entityId: registration.id, description: `Verifikasi dokumen pendaftaran ${registration.registrationCode}` });
     toast.success('Dokumen berhasil diverifikasi'); await loadRegistrations(); setSelectedRegistration(null);
@@ -1108,7 +1085,7 @@ function RegistrationsPanel({ user }: { user: User }) {
 
   const handleApprove = async (registration: Registration) => {
     DatabaseService.updateRegistration(registration.id, { status: 'approved', approvedAt: new Date().toISOString(), approvedBy: user.id });
-    const updated = DatabaseService.getRegistrationById(registration.id)!;
+    const updated = await DatabaseService.getRegistrationById(registration.id)!;
     await NotificationService.sendStatusUpdate(updated);
     DatabaseService.createActivityLog({ userId: user.id, userName: user.name, action: 'approve', entityType: 'registration', entityId: registration.id, description: `Approve pendaftaran ${registration.registrationCode}` });
     toast.success('Pendaftaran berhasil disetujui'); await loadRegistrations(); setSelectedRegistration(null);
@@ -1117,7 +1094,7 @@ function RegistrationsPanel({ user }: { user: User }) {
   const handleReject = async () => {
     if (!selectedRegistration || !rejectionReason.trim()) return;
     DatabaseService.updateRegistration(selectedRegistration.id, { status: 'rejected', rejectedAt: new Date().toISOString(), rejectedBy: user.id, rejectionReason });
-    const updated = DatabaseService.getRegistrationById(selectedRegistration.id)!;
+    const updated = await DatabaseService.getRegistrationById(selectedRegistration.id)!;
     await NotificationService.sendStatusUpdate(updated);
     DatabaseService.createActivityLog({ userId: user.id, userName: user.name, action: 'reject', entityType: 'registration', entityId: selectedRegistration.id, description: `Reject pendaftaran ${selectedRegistration.registrationCode}` });
     toast.success('Pendaftaran ditolak'); setShowRejectDialog(false); setRejectionReason(''); await loadRegistrations(); setSelectedRegistration(null);
@@ -1175,12 +1152,12 @@ function RegistrationsPanel({ user }: { user: User }) {
             <TableBody>
               {filteredRegistrations.map((reg) => (
                   <TableRow key={reg.id}>
-                    <TableCell className="font-mono text-xs">{reg.registration_code}</TableCell>
-                    <TableCell>{reg.nama_lengkap}</TableCell>
-                    <TableCell>{COURIER_TYPE_LABELS[reg.tipe_kurir]}</TableCell>
-                    <TableCell>{reg.hub_dilamar}</TableCell>
+{reg.registrationCode}
+{reg.namaLengkap}
+                    <TableCell>{COURIER_TYPE_LABELS[reg.jenisKurir]}</TableCell>
+                    <TableCell>{reg.hubDilamar}</TableCell>
                     <TableCell>{getStatusBadge(reg.status)}</TableCell>
-                    <TableCell>{new Date(reg.submitted_at).toLocaleDateString('id-ID')}</TableCell>
+                    <TableCell>{new Date(reg.submittedAt).toLocaleDateString('id-ID')}</TableCell>
                     <TableCell><Button variant="ghost" size="sm" onClick={() => setSelectedRegistration(reg)}><Eye className="h-4 w-4" /></Button></TableCell>
                   </TableRow>
               ))}
@@ -1202,24 +1179,24 @@ function RegistrationsPanel({ user }: { user: User }) {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <InfoItem label="Email" value={selectedRegistration.email} />
 
-<InfoItem label="Nama" value={selectedRegistration.nama_lengkap} />
-<InfoItem label="Nomor KTP" value={selectedRegistration.nomor_ktp} />
+<InfoItem label="Nama" value={selectedRegistration.namaLengkap} />
+<InfoItem label="Nomor KTP" value={selectedRegistration.nomorKtp} />
 
-                      <InfoItem label="Nomor WhatsApp" value={selectedRegistration.nomor_whatsapp} />
-                      <InfoItem label="Jenis Kurir" value={COURIER_TYPE_LABELS[selectedRegistration.tipe_kurir]} />
+                      <InfoItem label="Nomor WhatsApp" value={selectedRegistration.nomorWhatsapp} />
+                      <InfoItem label="Jenis Kurir" value={COURIER_TYPE_LABELS[selectedRegistration.jenisKurir]} />
                       <InfoItem label="Agama" value={RELIGION_LABELS[selectedRegistration.agama]} />
-                      <InfoItem label="Pendidikan" value={EDUCATION_LABELS[selectedRegistration.pendidikan_terakhir]} />
-                      <InfoItem label="Jenis Kelamin" value={selectedRegistration.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'} />
-                      <InfoItem label="Tanggal Lahir" value={selectedRegistration.tanggal_lahir} />
-                      <InfoItem label="Pernah Bergabung" value={YES_NO_LABELS[selectedRegistration.pernah_bergabung]} />
-                      <InfoItem label="Hub yang Dilamar" value={selectedRegistration.hub_dilamar} />
-                      <InfoItem label="Kontak Darurat" value={`${selectedRegistration.nama_pemilik_nomor_darurat} (${selectedRegistration.hubungan_pemilik_nomor_darurat})`} />
-                      <InfoItem label="Nomor Darurat" value={selectedRegistration.nomor_telepon_darurat} />
+                      <InfoItem label="Pendidikan" value={EDUCATION_LABELS[selectedRegistration.pendidikanTerakhir]} />
+                      <InfoItem label="Jenis Kelamin" value={selectedRegistration.jenisKelamin === 'L' ? 'Laki-laki' : 'Perempuan'} />
+                      <InfoItem label="Tanggal Lahir" value={selectedRegistration.tanggalLahir} />
+                      <InfoItem label="Pernah Bergabung" value={YES_NO_LABELS[selectedRegistration.pernahBergabung]} />
+                      <InfoItem label="Hub yang Dilamar" value={selectedRegistration.hubDilamar} />
+                      <InfoItem label="Kontak Darurat" value={`${selectedRegistration.namaPemilikNomorDarurat} (${selectedRegistration.hubunganPemilikNomorDarurat})`} />
+                      <InfoItem label="Nomor Darurat" value={selectedRegistration.nomorTeleponDarurat} />
                     </div>
                   </TabsContent>
-                  <TabsContent value="address" className="space-y-4"><InfoItem label="Alamat Lengkap" value={selectedRegistration.alamat_lengkap} /><div className="grid grid-cols-3 gap-4 text-sm"><InfoItem label="Kota" value={selectedRegistration.kota} /><InfoItem label="Kecamatan" value={selectedRegistration.kecamatan} /><InfoItem label="Kelurahan" value={selectedRegistration.kelurahan} /></div></TabsContent>
-                  <TabsContent value="sim" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Nomor SIM" value={selectedRegistration.nomor_sim} /><InfoItem label="Type SIM" value={selectedRegistration.type_sim} /><InfoItem label="Masa Berlaku SIM" value={selectedRegistration.masa_berlaku_sim} /></div></TabsContent>
-                  <TabsContent value="vehicle" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Jenis/Merk" value={selectedRegistration.jenis_merk_stnk} /><InfoItem label="Tahun Pembuatan" value={selectedRegistration.tahun_pembuatan_kendaraan} /><InfoItem label="Nomor Polisi" value={selectedRegistration.nomor_polisi} /><InfoItem label="Nomor STNK" value={selectedRegistration.nomor_stnk} /><InfoItem label="Berlaku STNK" value={selectedRegistration.tanggal_berlaku_stnk} /><InfoItem label="Berlaku Pajak" value={selectedRegistration.tanggal_berlaku_pajak_stnk} /></div></TabsContent>
+                  <TabsContent value="address" className="space-y-4"><InfoItem label="Alamat Lengkap" value={selectedRegistration.alamatLengkap} /><div className="grid grid-cols-3 gap-4 text-sm"><InfoItem label="Kota" value={selectedRegistration.kota} /><InfoItem label="Kecamatan" value={selectedRegistration.kecamatan} /><InfoItem label="Kelurahan" value={selectedRegistration.kelurahan} /></div></TabsContent>
+                  <TabsContent value="sim" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Nomor SIM" value={selectedRegistration.nomorSim} /><InfoItem label="Type SIM" value={selectedRegistration.typeSim} /><InfoItem label="Masa Berlaku SIM" value={selectedRegistration.masaBerlakuSim} /></div></TabsContent>
+                  <TabsContent value="vehicle" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Jenis/Merk" value={selectedRegistration.jenisMerkStnk} /><InfoItem label="Tahun Pembuatan" value={selectedRegistration.tahunPembuatanKendaraan} /><InfoItem label="Nomor Polisi" value={selectedRegistration.nomorPolisi} /><InfoItem label="Nomor STNK" value={selectedRegistration.nomorStnk} /><InfoItem label="Berlaku STNK" value={selectedRegistration.tanggalBerlakuStnk} /><InfoItem label="Berlaku Pajak" value={selectedRegistration.tanggalBerlakuPajakStnk} /></div></TabsContent>
                   <TabsContent value="documents" className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {selectedRegistration.documents && selectedRegistration.documents.length > 0 ? (

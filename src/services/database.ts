@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase"
+import type { Registration } from "../types"
 
 class DatabaseService {
   static TABLES = {
@@ -381,7 +382,7 @@ class DatabaseService {
 
     // Update registration with document
     const registrations = this.getRegistrationsLocal()
-    const registration = registrations.find(r => r.id === document.registrationId)
+    const registration = registrations.find((r: Registration) => r.id === document.registrationId)
     if (registration) {
       registration.documents = registration.documents || []
       registration.documents.push(newDocument)
