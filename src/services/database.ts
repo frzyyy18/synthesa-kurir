@@ -42,6 +42,9 @@ class DatabaseService {
         registrationCode: reg.registration_code,
         namaLengkap: reg.nama_lengkap,
         nomorKtp: reg.nomor_ktp,
+        nomorSim: reg.nomor_sim,
+        typeSim: reg.type_sim,
+        masaBerlakuSim: reg.masa_berlaku_sim,
         nomorWhatsapp: reg.nomor_whatsapp,
         nomorTeleponDarurat: reg.nomor_telepon_darurat,
         namaPemilikNomorDarurat: reg.nama_pemilik_nomor_darurat,
@@ -256,20 +259,53 @@ class DatabaseService {
   }
   
 
-  static async updateRegistration(id: string, updates: any) {
-
-    const { data, error } = await supabase
-      .from("registrations")
-      .update(updates)
-      .eq("id", id)
-
-    if (error) {
-      console.error('Error updating registration:', error)
-      throw error
-    }
-
-    return data
+static async updateRegistration(id: string, updates: any) {
+  // Transform camelCase to snake_case for database columns
+  const dbUpdates: any = { ...updates };
+  
+  if (dbUpdates.verifiedAt) {
+    dbUpdates.verified_at = dbUpdates.verifiedAt;
+    delete dbUpdates.verifiedAt;
   }
+  if (dbUpdates.verifiedBy) {
+    dbUpdates.verified_by = dbUpdates.verifiedBy;
+    delete dbUpdates.verifiedBy;
+  }
+  if (dbUpdates.approvedAt) {
+    dbUpdates.approved_at = dbUpdates.approvedAt;
+    delete dbUpdates.approvedAt;
+  }
+  if (dbUpdates.approvedBy) {
+    dbUpdates.approved_by = dbUpdates.approvedBy;
+    delete dbUpdates.approvedBy;
+  }
+  if (dbUpdates.rejectedAt) {
+    dbUpdates.rejected_at = dbUpdates.rejectedAt;
+    delete dbUpdates.rejectedAt;
+  }
+  if (dbUpdates.rejectedBy) {
+    dbUpdates.rejected_by = dbUpdates.rejectedBy;
+    delete dbUpdates.rejectedBy;
+  }
+  if (dbUpdates.rejectionReason) {
+    dbUpdates.rejection_reason = dbUpdates.rejectionReason;
+    delete dbUpdates.rejectionReason;
+  }
+
+  const { data, error } = await supabase
+    .from("registrations")
+    .update(dbUpdates)
+    .eq("id", id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error("Error updating registration:", error)
+    throw error
+  }
+
+  return data
+}
 
   static async getRegistrationById(id: string) {
     const { data, error } = await supabase
@@ -569,25 +605,36 @@ class DatabaseService {
      ACTIVITY LOGS
   =============================== */
 
-  static async createActivityLog(log: any) {
-    try {
-      const { data, error } = await supabase
-        .from("activity_logs")
-        .insert(log)
-        .select()
-        .single()
+static async createActivityLog(log: any) {
+  try {
+    // Transform camelCase to snake_case for database columns
+    const dbLog: any = { ...log };
+    if (dbLog.userId) {
+      dbLog.user_id = dbLog.userId;
+      delete dbLog.userId;
+    }
+    if (dbLog.userName) {
+      dbLog.user_name = dbLog.userName;
+      delete dbLog.userName;
+    }
 
-      if (error) {
-        console.warn('Failed to create activity log:', error)
-        return null
-      }
+    const { data, error } = await supabase
+      .from("activity_logs")
+      .insert(dbLog)
+      .select()
+      .single()
 
-      return data
-    } catch (error) {
-      console.warn('Activity log creation failed:', error)
+    if (error) {
+      console.warn('Failed to create activity log:', error)
       return null
     }
+
+    return data
+  } catch (error) {
+    console.warn('Activity log creation failed:', error)
+    return null
   }
+}
 
   static async getActivityLogs() {
     try {

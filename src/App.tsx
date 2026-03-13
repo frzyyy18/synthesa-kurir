@@ -1076,7 +1076,7 @@ function RegistrationsPanel({ user }: { user: User }) {
   });
 
   const handleVerify = async (registration: Registration) => {
-    DatabaseService.updateRegistration(registration.id, { status: 'verified', verifiedAt: new Date().toISOString(), verifiedBy: user.id });
+    DatabaseService.updateRegistration(registration.id, { status: 'verified', verified_at: new Date().toISOString(), verifiedBy: user.id });
     const updated = await DatabaseService.getRegistrationById(registration.id)!;
     await NotificationService.sendStatusUpdate(updated);
     DatabaseService.createActivityLog({ userId: user.id, userName: user.name, action: 'verify', entityType: 'registration', entityId: registration.id, description: `Verifikasi dokumen pendaftaran ${registration.registrationCode}` });
@@ -1150,11 +1150,12 @@ function RegistrationsPanel({ user }: { user: User }) {
               <TableRow><TableHead>Kode</TableHead><TableHead>Nama</TableHead><TableHead>Jenis Kurir</TableHead><TableHead>Hub</TableHead><TableHead>Status</TableHead><TableHead>Tanggal</TableHead><TableHead>Aksi</TableHead></TableRow>
             </TableHeader>
             <TableBody>
-              {filteredRegistrations.map((reg) => (
-                  <TableRow key={reg.id}>
-{reg.registrationCode}
-{reg.namaLengkap}
-                    <TableCell>{COURIER_TYPE_LABELS[reg.jenisKurir]}</TableCell>
+{filteredRegistrations.map((reg) => (
+  <TableRow key={reg.id}>
+    <TableCell>{reg.registrationCode}</TableCell>
+    <TableCell>{reg.namaLengkap}</TableCell>
+    <TableCell>{COURIER_TYPE_LABELS[reg.jenisKurir as CourierType]}</TableCell>
+
                     <TableCell>{reg.hubDilamar}</TableCell>
                     <TableCell>{getStatusBadge(reg.status)}</TableCell>
                     <TableCell>{new Date(reg.submittedAt).toLocaleDateString('id-ID')}</TableCell>
