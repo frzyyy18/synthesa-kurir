@@ -474,10 +474,10 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
         nomorStnk: formData.nomorStnk,
         tanggalBerlakuStnk: formData.tanggalBerlakuStnk,
         tanggalBerlakuPajakStnk: formData.tanggalBerlakuPajakStnk,
-        nomor_rekening: formData.nomor_rekening,
-        nama_pemilik_rekening: formData.nama_pemilik_rekening,
-        nama_bank: formData.nama_bank,
-        shopee_username: formData.shopee_username,
+        nomorRekening: formData.nomor_rekening,
+        namaPemilikRekening: formData.nama_pemilik_rekening,
+        namaBank: formData.nama_bank,
+        shopeeUsername: formData.shopee_username,
         statusRumah: formData.statusRumah as HouseStatus,
         jumlahTanggungan: formData.jumlahTanggungan,
         status: 'pending',
@@ -697,20 +697,20 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Data Rekening Bank</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2"><Label>Nomor Rekening *</Label><Input value={formData.nomor_rekening} onChange={(e) => handleInputChange('nomor_rekening', e.target.value)} placeholder="Nomor rekening" /></div>
-                  <div className="space-y-2"><Label>Nama Pemilik Rekening (harus nama pribadi) *</Label><Input value={formData.nama_pemilik_rekening} onChange={(e) => handleInputChange('nama_pemilik_rekening', e.target.value)} placeholder="Nama sesuai rekening" /></div>
+                  <div className="space-y-2"><Label>Nomor Rekening *</Label><Input value={formData.nomor_rekening} onChange={(e) => handleInputChange('nomorRekening', e.target.value)} placeholder="Nomor rekening" /></div>
+                  <div className="space-y-2"><Label>Nama Pemilik Rekening (harus nama pribadi) *</Label><Input value={formData.nama_pemilik_rekening} onChange={(e) => handleInputChange('namaPemilikRekening', e.target.value)} placeholder="Nama sesuai rekening" /></div>
                   <div className="space-y-2 md:col-span-2">
                     <Label>Nama Bank *</Label>
-                    <Select value={formData.nama_bank} onValueChange={(v) => handleInputChange('nama_bank', v)}>
+                    <Select value={formData.nama_bank} onValueChange={(v) => handleInputChange('namaBank', v)}>
                       <SelectTrigger><SelectValue placeholder="Pilih bank" /></SelectTrigger>
-                      <SelectContent><SelectItem value="BCA">BCA</SelectItem><SelectItem value="Mandiri">Mandiri</SelectItem><SelectItem value="BNI">BNI</SelectItem><SelectItem value="BRI">BRI</SelectItem><SelectItem value="BSI">BSI</SelectItem><SelectItem value="CIMB">CIMB Niaga</SelectItem><SelectItem value="Permata">Permata</SelectItem><SelectItem value="Danamon">Danamon</SelectItem><SelectItem value="Lainnya">Lainnya</SelectItem></SelectContent>
+                      <SelectContent><SelectItem value="BCA">BCA</SelectItem><SelectItem value="Mandiri">Mandiri</SelectItem><SelectItem value="BNI">BNI</SelectItem><SelectItem value="BRI">BRI</SelectItem><SelectItem value="BSI">BSI</SelectItem><SelectItem value="CIMB">CIMB Niaga</SelectItem><SelectItem value="Permata">Permata</SelectItem><SelectItem value="Danamon">Danamon</SelectItem><SelectItem value="Lainnya">Seabank</SelectItem><SelectItem value="Lainnya">Lainnya</SelectItem></SelectContent>
                     </Select>
                   </div>
                 </div>
                 <Separator className="my-4" />
                 <h3 className="font-semibold text-lg">Informasi Lainnya</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2"><Label>Shopee Username *</Label><Input value={formData.shopee_username} onChange={(e) => handleInputChange('shopee_username', e.target.value)} placeholder="Username Shopee Anda" /></div>
+                  <div className="space-y-2"><Label>Shopee Username *</Label><Input value={formData.shopee_username} onChange={(e) => handleInputChange('shopeeUsername', e.target.value)} placeholder="Username Shopee Anda" /></div>
                   <div className="space-y-2">
                     <Label>Status Rumah Saat Ini *</Label>
                     <Select value={formData.statusRumah} onValueChange={(v) => handleInputChange('statusRumah', v)}>

@@ -141,10 +141,10 @@ class DatabaseService {
       nomorStnk: data.nomor_stnk,
       tanggalBerlakuStnk: data.tanggal_berlaku_stnk,
       tanggalBerlakuPajakStnk: data.tanggal_berlaku_pajak_stnk,
-      nomorRekening: data.nomor_rekening,
-      namaPemilikRekening: data.nama_pemilik_rekening,
-      namaBank: data.nama_bank,
-      shopeeUsername: data.shopee_username,
+      nomor_rekening: data.nomor_rekening,
+      nama_pemilik_rekening: data.nama_pemilik_rekening,
+      nama_bank: data.nama_bank,
+      shopee_username: data.shopee_username,
       statusRumah: data.status_rumah,
       jumlahTanggungan: data.jumlah_tanggungan,
       status: data.status,
@@ -169,7 +169,7 @@ class DatabaseService {
       const registrationCode = "SPX-" + Date.now()
 
       // Validate required fields
-      const requiredFields = ['namaLengkap', 'nomorKtp', 'nomorWhatsapp', 'nomorTeleponDarurat', 'namaPemilikNomorDarurat', 'hubunganPemilikNomorDarurat', 'jenisKelamin', 'tanggalLahir', 'alamatLengkap', 'kota', 'kecamatan', 'kelurahan', 'nomorSim', 'typeSim', 'masaBerlakuSim', 'jenisMerkStnk', 'tahunPembuatanKendaraan', 'nomorPolisi', 'nomorStnk', 'tanggalBerlakuStnk', 'tanggalBerlakuPajakStnk', 'nomorRekening', 'namaPemilikRekening', 'namaBank', 'shopeeUsername', 'statusRumah', 'jumlahTanggungan', 'pernahBergabung', 'jenisKurir', 'hubDilamar', 'pendidikanTerakhir', 'agama']
+      const requiredFields = ['namaLengkap', 'nomorKtp', 'nomorWhatsapp', 'nomorTeleponDarurat', 'namaPemilikNomorDarurat', 'hubunganPemilikNomorDarurat', 'jenisKelamin', 'tanggalLahir', 'alamatLengkap', 'kota', 'kecamatan', 'kelurahan', 'nomorSim', 'typeSim', 'masaBerlakuSim', 'jenisMerkStnk', 'tahunPembuatanKendaraan', 'nomorPolisi', 'nomorStnk', 'tanggalBerlakuStnk', 'tanggalBerlakuPajakStnk', 'nomor_rekening', 'nama_pemilik_rekening', 'nama_bank', 'shopee_username', 'statusRumah', 'jumlahTanggungan', 'pernahBergabung', 'jenisKurir', 'hubDilamar', 'pendidikanTerakhir', 'agama']
       
       const missingFields = requiredFields.filter(field => !registration[field])
       if (missingFields.length > 0) {
@@ -202,10 +202,10 @@ class DatabaseService {
           nomor_stnk: registration.nomorStnk,
           tanggal_berlaku_stnk: registration.tanggalBerlakuStnk ? new Date(registration.tanggalBerlakuStnk).toISOString().split('T')[0] : null,
           tanggal_berlaku_pajak_stnk: registration.tanggalBerlakuPajakStnk ? new Date(registration.tanggalBerlakuPajakStnk).toISOString().split('T')[0] : null,
-          nomor_rekening: registration.nomorRekening,
-          nama_pemilik_rekening: registration.namaPemilikRekening,
-          nama_bank: registration.namaBank,
-          shopee_username: registration.shopeeUsername,
+          nomor_rekening: registration.nomor_rekening,
+          nama_pemilik_rekening: registration.nama_pemilik_rekening,
+          nama_bank: registration.nama_bank,
+          shopee_username: registration.shopee_username,
           status_rumah: registration.statusRumah,
           jumlah_tanggungan: registration.jumlahTanggungan,
           pernah_bergabung: registration.pernahBergabung,
@@ -336,10 +336,10 @@ static async updateRegistration(id: string, updates: any) {
       nomorStnk: data.nomor_stnk,
       tanggalBerlakuStnk: data.tanggal_berlaku_stnk,
       tanggalBerlakuPajakStnk: data.tanggal_berlaku_pajak_stnk,
-      nomorRekening: data.nomor_rekening,
-      namaPemilikRekening: data.nama_pemilik_rekening,
-      namaBank: data.nama_bank,
-      shopeeUsername: data.shopee_username,
+      nomor_rekening: data.nomor_rekening,
+      nama_pemilik_rekening: data.nama_pemilik_rekening,
+      nama_bank: data.nama_bank,
+      shopee_username: data.shopee_username,
       statusRumah: data.status_rumah,
       jumlahTanggungan: data.jumlah_tanggungan,
       pernahBergabung: data.pernah_bergabung,

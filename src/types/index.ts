@@ -87,12 +87,14 @@ export interface Registration {
   tanggalBerlakuPajakStnk: string;
   
   // 28-30. Rekening Bank
-  nomorRekening: string;
-  namaPemilikRekening: string;
-  namaBank: string;
+
+  nomorRekening?: string;
+  namaPemilikRekening?: string;
+  namaBank?: string;
   
   // 40. Shopee Username
-  shopeeUsername: string;
+  shopeeUsername?: string;
+
   
   // 41. Status Rumah
   statusRumah: HouseStatus;
