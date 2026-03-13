@@ -949,7 +949,19 @@ function LoginPage({ onNavigate, onLogin }: { onNavigate: (view: View) => void; 
 // Dashboard
 function Dashboard({ onLogout, sidebarOpen, setSidebarOpen, user }: { onLogout: () => void; sidebarOpen: boolean; setSidebarOpen: (open: boolean) => void; user: User }) {
   const [activeTab, setActiveTab] = useState('registrations');
-const stats = { totalRegistrations: 0, pendingRegistrations: 0, verifiedRegistrations: 0, approvedRegistrations: 0, rejectedRegistrations: 0, todayRegistrations: 0, totalPICs: 0 };
+const [stats, setStats] = useState<DashboardStats>({ totalRegistrations: 0, pendingRegistrations: 0, verifiedRegistrations: 0, approvedRegistrations: 0, rejectedRegistrations: 0, todayRegistrations: 0, totalPICs: 0 });
+
+useEffect(() => {
+  const loadStats = async () => {
+    try {
+      const dashboardStats = await DatabaseService.getDashboardStats();
+      setStats(dashboardStats);
+    } catch (error) {
+      console.error('Error loading dashboard stats:', error);
+    }
+  };
+  loadStats();
+}, []);
 // registrations state removed
 
 
@@ -1331,6 +1343,31 @@ function UsersPanel() {
 
 function LogsPanel() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refreshLogs = () => {
+    setRefreshKey(prev => prev + 1);
+    toast.info('Menyegarkan log aktivitas...');
+  };
+
+  useEffect(() => {
+    const loadLogs = async () => {
+      try {
+        console.log('Loading logs...');
+        const data = await DatabaseService.getActivityLogs();
+        console.log('Logs loaded:', data?.length || 0);
+        setLogs(data || []);
+        if (data && data.length === 0) {
+          toast.info('Log aktivitas kosong. Lakukan verifikasi/approval untuk melihat log.');
+        }
+      } catch (error) {
+        console.error('Error loading logs:', error);
+        toast.error('Gagal memuat log aktivitas: ' + (error as Error).message);
+        setLogs([]);
+      }
+    };
+    loadLogs();
+  }, [refreshKey]);
   useEffect(() => {
     const loadLogs = async () => {
       const data = await DatabaseService.getActivityLogs();
