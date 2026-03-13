@@ -407,7 +407,7 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
     tanggalLahir: '', alamatLengkap: '', kota: '', kecamatan: '', kelurahan: '',
     nomorSim: '', typeSim: '', masaBerlakuSim: '', jenisMerkStnk: '', tahunPembuatanKendaraan: '',
     nomorPolisi: '', nomorStnk: '', tanggalBerlakuStnk: '', tanggalBerlakuPajakStnk: '',
-    nomorRekening: '', namaPemilikRekening: '', namaBank: '', shopeeUsername: '',
+    nomor_rekening: '', nama_pemilik_rekening: '', nama_bank: '', shopee_username: '',
     statusRumah: '' as HouseStatus | '', jumlahTanggungan: '',
   });
 
@@ -437,7 +437,7 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
   const isStep2Valid = formData.namaLengkap && formData.nomorKtp && formData.nomorWhatsapp && formData.nomorTeleponDarurat && formData.namaPemilikNomorDarurat && formData.hubunganPemilikNomorDarurat && formData.jenisKelamin && formData.tanggalLahir;
   const isStep3Valid = formData.alamatLengkap && formData.kota && formData.kecamatan && formData.kelurahan;
   const isStep4Valid = formData.nomorSim && formData.typeSim && formData.masaBerlakuSim && formData.jenisMerkStnk && formData.tahunPembuatanKendaraan && formData.nomorPolisi && formData.nomorStnk && formData.tanggalBerlakuStnk && formData.tanggalBerlakuPajakStnk;
-  const isStep5Valid = formData.nomorRekening && formData.namaPemilikRekening && formData.namaBank && formData.shopeeUsername && formData.statusRumah && formData.jumlahTanggungan;
+  const isStep5Valid = formData.nomor_rekening && formData.nama_pemilik_rekening && formData.nama_bank && formData.shopee_username && formData.statusRumah && formData.jumlahTanggungan;
   const isStep6Valid = Object.values(documents).every(d => d.file !== null);
 
   const stepTitles = ['Informasi Dasar', 'Data Pribadi', 'Alamat Domisili', 'SIM & Kendaraan', 'Rekening & Informasi Lainnya', 'Upload Dokumen', 'Selesai'];
@@ -474,10 +474,10 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
         nomorStnk: formData.nomorStnk,
         tanggalBerlakuStnk: formData.tanggalBerlakuStnk,
         tanggalBerlakuPajakStnk: formData.tanggalBerlakuPajakStnk,
-        nomorRekening: formData.nomorRekening,
-        namaPemilikRekening: formData.namaPemilikRekening,
-        namaBank: formData.namaBank,
-        shopeeUsername: formData.shopeeUsername,
+        nomor_rekening: formData.nomor_rekening,
+        nama_pemilik_rekening: formData.nama_pemilik_rekening,
+        nama_bank: formData.nama_bank,
+        shopee_username: formData.shopee_username,
         statusRumah: formData.statusRumah as HouseStatus,
         jumlahTanggungan: formData.jumlahTanggungan,
         status: 'pending',
@@ -697,11 +697,11 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Data Rekening Bank</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2"><Label>Nomor Rekening *</Label><Input value={formData.nomorRekening} onChange={(e) => handleInputChange('nomorRekening', e.target.value)} placeholder="Nomor rekening" /></div>
-                  <div className="space-y-2"><Label>Nama Pemilik Rekening (harus nama pribadi) *</Label><Input value={formData.namaPemilikRekening} onChange={(e) => handleInputChange('namaPemilikRekening', e.target.value)} placeholder="Nama sesuai rekening" /></div>
+                  <div className="space-y-2"><Label>Nomor Rekening *</Label><Input value={formData.nomor_rekening} onChange={(e) => handleInputChange('nomor_rekening', e.target.value)} placeholder="Nomor rekening" /></div>
+                  <div className="space-y-2"><Label>Nama Pemilik Rekening (harus nama pribadi) *</Label><Input value={formData.nama_pemilik_rekening} onChange={(e) => handleInputChange('nama_pemilik_rekening', e.target.value)} placeholder="Nama sesuai rekening" /></div>
                   <div className="space-y-2 md:col-span-2">
                     <Label>Nama Bank *</Label>
-                    <Select value={formData.namaBank} onValueChange={(v) => handleInputChange('namaBank', v)}>
+                    <Select value={formData.nama_bank} onValueChange={(v) => handleInputChange('nama_bank', v)}>
                       <SelectTrigger><SelectValue placeholder="Pilih bank" /></SelectTrigger>
                       <SelectContent><SelectItem value="BCA">BCA</SelectItem><SelectItem value="Mandiri">Mandiri</SelectItem><SelectItem value="BNI">BNI</SelectItem><SelectItem value="BRI">BRI</SelectItem><SelectItem value="BSI">BSI</SelectItem><SelectItem value="CIMB">CIMB Niaga</SelectItem><SelectItem value="Permata">Permata</SelectItem><SelectItem value="Danamon">Danamon</SelectItem><SelectItem value="Lainnya">Lainnya</SelectItem></SelectContent>
                     </Select>
@@ -710,7 +710,7 @@ function RegistrationPage({ onNavigate }: { onNavigate: (view: View) => void }) 
                 <Separator className="my-4" />
                 <h3 className="font-semibold text-lg">Informasi Lainnya</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2"><Label>Shopee Username *</Label><Input value={formData.shopeeUsername} onChange={(e) => handleInputChange('shopeeUsername', e.target.value)} placeholder="Username Shopee Anda" /></div>
+                  <div className="space-y-2"><Label>Shopee Username *</Label><Input value={formData.shopee_username} onChange={(e) => handleInputChange('shopee_username', e.target.value)} placeholder="Username Shopee Anda" /></div>
                   <div className="space-y-2">
                     <Label>Status Rumah Saat Ini *</Label>
                     <Select value={formData.statusRumah} onValueChange={(v) => handleInputChange('statusRumah', v)}>
