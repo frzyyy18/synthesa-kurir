@@ -1343,40 +1343,26 @@ function UsersPanel() {
 
 function LogsPanel() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const refreshLogs = () => {
-    setRefreshKey(prev => prev + 1);
-    toast.info('Menyegarkan log aktivitas...');
+  useEffect(() => {
+  const loadLogs = async () => {
+    const data = await DatabaseService.getActivityLogs();
+    setLogs(data || []);
   };
 
-  useEffect(() => {
-    const loadLogs = async () => {
-      try {
-        console.log('Loading logs...');
-        const data = await DatabaseService.getActivityLogs();
-        console.log('Logs loaded:', data?.length || 0);
-        setLogs(data || []);
-        if (data && data.length === 0) {
-          toast.info('Log aktivitas kosong. Lakukan verifikasi/approval untuk melihat log.');
-        }
-      } catch (error) {
-        console.error('Error loading logs:', error);
-        toast.error('Gagal memuat log aktivitas: ' + (error as Error).message);
-        setLogs([]);
-      }
-    };
-    loadLogs();
-  }, [refreshKey]);
-  useEffect(() => {
-    const loadLogs = async () => {
-      const data = await DatabaseService.getActivityLogs();
-      setLogs(data);
-    };
-    loadLogs();
-  }, []);
-  const handleExport = () => { ExportService.exportActivityLogs(logs.map(l => ({ userName: l.userName, action: l.action, description: l.description, timestamp: l.timestamp }))); toast.success('Log berhasil diexport'); };
+  loadLogs();
+}, []);
 
+
+const handleExport = () => {
+  ExportService.exportActivityLogs(
+    logs.map((l: ActivityLog) => ({
+      userName: l.userName,
+      action: l.action,
+      description: l.description,
+      timestamp: l.timestamp
+    }))
+  );
+};
   return (
     <Card>
       <CardHeader><div className="flex items-center justify-between"><CardTitle>Log Aktivitas</CardTitle><Button variant="outline" onClick={handleExport}><Download className="mr-2 h-4 w-4" />Export</Button></div></CardHeader>
