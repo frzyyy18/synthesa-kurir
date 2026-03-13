@@ -1187,7 +1187,7 @@ function RegistrationsPanel({ user }: { user: User }) {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">{getStatusBadge(selectedRegistration.status)}<span className="text-sm text-gray-500">{new Date(selectedRegistration.submittedAt).toLocaleString('id-ID')}</span></div>
                 <Tabs defaultValue="personal">
-                  <TabsList className="grid w-full grid-cols-5"><TabsTrigger value="personal">Pribadi</TabsTrigger><TabsTrigger value="address">Alamat</TabsTrigger><TabsTrigger value="sim">SIM</TabsTrigger><TabsTrigger value="vehicle">Kendaraan</TabsTrigger><TabsTrigger value="documents">Dokumen</TabsTrigger></TabsList>
+                  <TabsList className="flex w-full overflow-x-auto whitespace-nowrap"><TabsTrigger value="personal">Pribadi</TabsTrigger><TabsTrigger value="address">Alamat</TabsTrigger><TabsTrigger value="sim">SIM</TabsTrigger><TabsTrigger value="vehicle">Kendaraan</TabsTrigger><TabsTrigger value="bank">Rekening</TabsTrigger><TabsTrigger value="documents">Dokumen</TabsTrigger></TabsList>
   <TabsContent value="personal" className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <InfoItem label="Email" value={selectedRegistration.email} />
@@ -1205,12 +1205,16 @@ function RegistrationsPanel({ user }: { user: User }) {
                       <InfoItem label="Hub yang Dilamar" value={selectedRegistration.hubDilamar} />
                       <InfoItem label="Kontak Darurat" value={`${selectedRegistration.namaPemilikNomorDarurat} (${selectedRegistration.hubunganPemilikNomorDarurat})`} />
                       <InfoItem label="Nomor Darurat" value={selectedRegistration.nomorTeleponDarurat} />
+                      <InfoItem label="Nomor Rekening" value={selectedRegistration.nomorRekening || "-"} />
+                      <InfoItem label="Nama Pemilik Rekening" value={selectedRegistration.namaPemilikRekening || "-"} />
+                      <InfoItem label="Nama Bank" value={selectedRegistration.namaBank || "-"} />
                     </div>
                   </TabsContent>
                   <TabsContent value="address" className="space-y-4"><InfoItem label="Alamat Lengkap" value={selectedRegistration.alamatLengkap} /><div className="grid grid-cols-3 gap-4 text-sm"><InfoItem label="Kota" value={selectedRegistration.kota} /><InfoItem label="Kecamatan" value={selectedRegistration.kecamatan} /><InfoItem label="Kelurahan" value={selectedRegistration.kelurahan} /></div></TabsContent>
                   <TabsContent value="sim" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Nomor SIM" value={selectedRegistration.nomorSim} /><InfoItem label="Type SIM" value={selectedRegistration.typeSim} /><InfoItem label="Masa Berlaku SIM" value={selectedRegistration.masaBerlakuSim} /></div></TabsContent>
                   <TabsContent value="vehicle" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"><InfoItem label="Jenis/Merk" value={selectedRegistration.jenisMerkStnk} /><InfoItem label="Tahun Pembuatan" value={selectedRegistration.tahunPembuatanKendaraan} /><InfoItem label="Nomor Polisi" value={selectedRegistration.nomorPolisi} /><InfoItem label="Nomor STNK" value={selectedRegistration.nomorStnk} /><InfoItem label="Berlaku STNK" value={selectedRegistration.tanggalBerlakuStnk} /><InfoItem label="Berlaku Pajak" value={selectedRegistration.tanggalBerlakuPajakStnk} /></div></TabsContent>
-                  <TabsContent value="documents" className="space-y-4">
+                  <TabsContent value="bank" className="space-y-4"><div className="grid grid-cols-2 gap-4 text-sm"> <InfoItem label="Nomor Rekening"value={selectedRegistration.nomorRekening || "-"}/><InfoItem    label="Nama Pemilik Rekening"value={selectedRegistration.namaPemilikRekening || "-"}/><InfoItem label="Nama Bank"value={selectedRegistration.namaBank || "-"}/></div></TabsContent>
+                   <TabsContent value="documents" className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {selectedRegistration.documents && selectedRegistration.documents.length > 0 ? (
                         selectedRegistration.documents.map((doc) => (
